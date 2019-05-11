@@ -5907,6 +5907,28 @@ var author$project$Main$onEnter = function (msg) {
 			},
 			elm$html$Html$Events$keyCode));
 };
+var author$project$Main$zip = F2(
+	function (l1, l2) {
+		var _n0 = _Utils_Tuple2(l1, l2);
+		if (!_n0.a.b) {
+			return _List_Nil;
+		} else {
+			if (!_n0.b.b) {
+				return _List_Nil;
+			} else {
+				var _n1 = _n0.a;
+				var a = _n1.a;
+				var as_ = _n1.b;
+				var _n2 = _n0.b;
+				var b = _n2.a;
+				var bs = _n2.b;
+				return A2(
+					elm$core$List$cons,
+					_Utils_Tuple2(a, b),
+					A2(author$project$Main$zip, as_, bs));
+			}
+		}
+	});
 var elm$core$List$isEmpty = function (xs) {
 	if (!xs.b) {
 		return true;
@@ -5923,6 +5945,7 @@ var elm$core$Maybe$withDefault = F2(
 			return _default;
 		}
 	});
+var elm$core$String$fromFloat = _String_fromNumber;
 var elm$html$Html$button = _VirtualDom_node('button');
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$input = _VirtualDom_node('input');
@@ -6081,6 +6104,46 @@ var author$project$Main$viewForm = function (model) {
 						_List_fromArray(
 							[
 								elm$html$Html$text('Submit')
+							])),
+						A2(
+						elm$html$Html$div,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('formMessage')
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text(
+								function () {
+									var _n0 = model.recipe;
+									if (_n0.$ === 'Nothing') {
+										return '';
+									} else {
+										if (_n0.a.b.$ === 'RecipeFailure') {
+											var _n1 = _n0.a;
+											var _n2 = _n1.b;
+											return 'Could not make a recipe with the given ingredients';
+										} else {
+											var _n3 = _n0.a;
+											var is = _n3.a;
+											var _n4 = _n3.b.a;
+											var name = _n4.a;
+											var proportions = _n4.b;
+											var ingredientProps = A2(author$project$Main$zip, is, proportions);
+											return 'Make a ' + (name + ('with ' + A2(
+												elm$core$String$join,
+												', ',
+												A2(
+													elm$core$List$map,
+													function (_n5) {
+														var i = _n5.a;
+														var prop = _n5.b;
+														return elm$core$String$fromFloat(prop) + ('oz ' + i);
+													},
+													ingredientProps))));
+										}
+									}
+								}())
 							]))
 					]))
 			]));

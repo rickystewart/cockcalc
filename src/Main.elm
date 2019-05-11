@@ -242,6 +242,11 @@ onEnter msg =
             )
         |> on "keyup"
 
+zip l1 l2 = case (l1, l2) of
+    ([], _) -> []
+    (_, []) -> []
+    (a :: as_, b :: bs) -> (a, b) :: (zip as_ bs)
+
 -- VIEWS
 
 view : Model -> Html Msg
@@ -301,6 +306,18 @@ viewForm model =
                     [ ( "disabled", List.isEmpty (filteredIngredients model.fieldIngredients )) ]
                 ]
                 [ text "Submit" ]
+            , div [ class "formMessage" ]
+              [ text <|
+                  case model.recipe of
+                      Nothing -> ""
+                      Just (_, RecipeFailure) -> "Could not make a recipe with the given ingredients"
+                      Just (is, RecipeSuccess (name, proportions)) ->
+                          let
+                              ingredientProps = zip is proportions
+                          in
+                              "Make a " ++ name ++ " with " ++
+                              String.join ", " (List.map (\ (i, prop) -> String.fromFloat prop ++ "oz " ++ i) ingredientProps)
+              ]
             ]
         ]
     
