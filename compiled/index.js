@@ -5888,7 +5888,7 @@ var author$project$Main$viewForm = function (model) {
 						_List_fromArray(
 							[
 								elm$html$Html$text(
-								'Select ' + (elm$core$String$fromInt(author$project$Main$maxIngredientSelectable) + (' ingredients - Selected: ' + elm$core$String$fromInt(
+								'Select up to ' + (elm$core$String$fromInt(author$project$Main$maxIngredientSelectable) + (' ingredients - Selected: ' + elm$core$String$fromInt(
 									elm$core$List$length(
 										author$project$Main$filteredIngredients(model.fieldIngredients))))))
 							])),

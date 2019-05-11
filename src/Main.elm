@@ -10,6 +10,22 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Task
 
+type alias DrinkType = String
+type alias DrinkSpec =
+    { volume: Float
+    , abvRange: (Float, Float)
+    , sugarRange: (Float, Float)
+    , acidRange: (Float, Float)
+    }
+drinkTypeToSpec : Dict.Dict DrinkType DrinkSpec
+drinkTypeToSpec =
+    Dict.fromList [
+        ( "Built Drink", { volume = 2.5, abvRange = (0.85, 1), sugarRange = (0.317466, 0.35274), acidRange = (0, 0) }),
+        ( "Stirred Drink", { volume = 3, abvRange = (0.87, 1.29), sugarRange = (0.186952, 0.282192), acidRange = (0.0045, 0.006) }),
+        ("Shaken Drink", { volume = 3.5, abvRange = (0.805, 1.1025), sugarRange = (0.282192, 0.4761985), acidRange = (0.042, 0.049) }),
+        ("Blended Drink", { volume = 0.75, abvRange = (0.2145, 0.246), sugarRange = (0.529109, 0.543219), acidRange = (0.0081, 0.008175) })
+    ]
+
 type alias Recipe = Dict.Dict String Float
 type RecipeResult
     = RecipeSuccess Recipe
@@ -123,7 +139,6 @@ toggle key dict =
             case oldValue of
                 Just value ->
                     Just <| not value
-
                 Nothing ->
                     Nothing
         )
@@ -144,7 +159,6 @@ ingredientsQuantityHaveReachedtheLimit ingredients =
     List.length (filteredIngredients ingredients) >= maxIngredientSelectable
 
 
-
 onEnter : msg -> Attribute msg
 onEnter msg =
     keyCode
@@ -156,7 +170,6 @@ onEnter msg =
                     Decode.fail "Not enter"
             )
         |> on "keyup"
-
 
 
 -- VIEWS
@@ -207,7 +220,7 @@ viewForm model =
                 )
             , div [ class "formMessage" ]
                 [ text <|
-                    "Select "
+                    "Select up to "
                         ++ String.fromInt maxIngredientSelectable
                         ++ " ingredients - Selected: "
                         ++ String.fromInt (List.length <| filteredIngredients model.fieldIngredients)
@@ -220,8 +233,6 @@ viewForm model =
                 [ text "Submit" ]
             ]
         ]
-
-
     
 
 -- MAIN
