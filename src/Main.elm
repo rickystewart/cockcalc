@@ -13,27 +13,27 @@ import Task
 type alias DrinkType = String
 type alias DrinkSpec =
     { volume: Float
-    , abvRange: (Float, Float)
-    , sugarRange: (Float, Float)
-    , acidRange: (Float, Float)
+    , ethanol: Float
+    , acid: Float
+    , sugar: Float
     }
 drinkTypeToSpec : Dict.Dict DrinkType DrinkSpec
 drinkTypeToSpec =
     Dict.fromList [
-        ( "Built Drink", { volume = 2.5, abvRange = (0.85, 1), sugarRange = (0.317466, 0.35274), acidRange = (0, 0) }),
-        ( "Stirred Drink", { volume = 3, abvRange = (0.87, 1.29), sugarRange = (0.186952, 0.282192), acidRange = (0.0045, 0.006) }),
-        ("Shaken Drink", { volume = 3.5, abvRange = (0.805, 1.1025), sugarRange = (0.282192, 0.4761985), acidRange = (0.042, 0.049) }),
-        ("Blended Drink", { volume = 0.75, abvRange = (0.2145, 0.246), sugarRange = (0.529109, 0.543219), acidRange = (0.0081, 0.008175) })
+        ( "Built Drink", { volume = 2.5, ethanol= 37, acid= 0, sugar= 9.5 } ),
+        ( "Stirred Drink", { volume = 3, ethanol= 36, acid= 0.175, sugar= 6.7 } ),
+        ("Shaken Drink", { volume = 3.5, ethanol=27.25, acid=1.3, sugar=10.75 } ),
+        ("Blended Drink", { volume = 0.75, ethanol=30.5, acid=1.085, sugar=15.2 } )
     ]
 
-type alias Recipe = Dict.Dict String Float
+type alias Recipe = (String, List Float)
 type RecipeResult
     = RecipeSuccess Recipe
     | RecipeFailure
 
 type alias Model =
     { fieldIngredients : Dict.Dict String Bool
-    , recipe : Maybe RecipeResult
+    , recipe : Maybe (List String, RecipeResult)
     }
 
 type alias Ingredient = String
@@ -43,6 +43,15 @@ type alias IngredientProperties =
     , acidity: Float
     , sugar: Float
     }
+zeroIngredientProperties : IngredientProperties
+zeroIngredientProperties = { ethanol=0, acidity=0, sugar=0 }
+
+chooseRecipe : RecipeResult -> RecipeResult -> RecipeResult
+chooseRecipe r1 r2 =
+    case (r1, r2) of
+        (RecipeFailure, RecipeFailure) -> RecipeFailure
+        (RecipeFailure, RecipeSuccess s) -> RecipeSuccess s
+        (RecipeSuccess s, _) -> RecipeSuccess s
 
 ingredientToProperties : Dict.Dict Ingredient IngredientProperties
 ingredientToProperties =
@@ -111,6 +120,70 @@ ingredientToProperties =
         ( "Turmeric Gin", { ethanol = 41.200000, sugar = 0.000000, acidity = 0.000000 } )
     ]
 
+type alias RecipeRequest =
+    { i1: IngredientProperties
+    , i2: IngredientProperties
+    , i3: IngredientProperties
+    , i4: IngredientProperties
+    }
+
+recipeRequestWithDrinkTypeToRecipe : DrinkType -> DrinkSpec -> RecipeRequest -> RecipeResult
+recipeRequestWithDrinkTypeToRecipe dt ds request =
+    let
+        { i1, i2, i3, i4 } = request
+        e1 = i1.ethanol
+        a1=i1.acidity
+        s1=i1.sugar
+        e2=i2.ethanol
+        a2=i2.acidity
+        s2=i2.sugar
+        e3=i3.ethanol
+        a3=i3.acidity
+        s3=i3.sugar
+        e4=i4.ethanol
+        a4=i4.acidity
+        s4=i4.sugar
+        tv = ds.volume
+        e=ds.ethanol
+        a=ds.acid
+        s=ds.sugar
+        v1 = -((tv*(a3*e2*s - a4*e2*s - a2*e3*s + a4*e3*s + a2*e4*s - a3*e4*s + a*e3*s2 - a4*e3*s2 - a*e4*s2 + a3*e4*s2 - a*e2*s3 + a4*e2*s3 + a*e4*s3 - a2*e4*s3 + a*e2*s4 - a3*e2*s4 - a*e3*s4 + a2*e3*s4 + a2*a4*s*tv - a3*a4*s*tv - a*a3*s2*tv + a3*a4*s2*tv + a*a2*s3*tv - a2*a4*s3*tv - a*a2*s4*tv + a*a3*s4*tv))/(-(a3*e2*s1) + a4*e2*s1 + a2*e3*s1 - a4*e3*s1 - a2*e4*s1 + a3*e4*s1 + a3*e1*s2 - a4*e1*s2 - a1*e3*s2 + a4*e3*s2 + a1*e4*s2 - a3*e4*s2 - a2*e1*s3 + a4*e1*s3 + a1*e2*s3 - a4*e2*s3 - a1*e4*s3 + a2*e4*s3 + a2*e1*s4 - a3*e1*s4 - a1*e2*s4 + a3*e2*s4 + a1*e3*s4 - a2*e3*s4 - a2*a4*s1*tv + a3*a4*s1*tv + a1*a4*s2*tv - a3*a4*s2*tv - a1*a4*s3*tv + a2*a4*s3*tv))
+        v2 = (tv*(a3*e1*s - a4*e1*s - a1*e3*s + a4*e3*s + a1*e4*s - a3*e4*s + a*e3*s1 - a4*e3*s1 - a*e4*s1 + a3*e4*s1 - a*e1*s3 + a4*e1*s3 + a*e4*s3 - a1*e4*s3 + a*e1*s4 - a3*e1*s4 - a*e3*s4 + a1*e3*s4 + a1*a4*s*tv - a3*a4*s*tv - a*a3*s1*tv + a3*a4*s1*tv + a*a1*s3*tv - a1*a4*s3*tv - a*a1*s4*tv + a*a3*s4*tv))/(-(a3*e2*s1) + a4*e2*s1 + a2*e3*s1 - a4*e3*s1 - a2*e4*s1 + a3*e4*s1 + a3*e1*s2 - a4*e1*s2 - a1*e3*s2 + a4*e3*s2 + a1*e4*s2 - a3*e4*s2 - a2*e1*s3 + a4*e1*s3 + a1*e2*s3 - a4*e2*s3 - a1*e4*s3 + a2*e4*s3 + a2*e1*s4 - a3*e1*s4 - a1*e2*s4 + a3*e2*s4 + a1*e3*s4 - a2*e3*s4 - a2*a4*s1*tv + a3*a4*s1*tv + a1*a4*s2*tv - a3*a4*s2*tv - a1*a4*s3*tv + a2*a4*s3*tv)
+        v3 = -((tv*(a2*e1*s - a4*e1*s - a1*e2*s + a4*e2*s + a1*e4*s - a2*e4*s + a*e2*s1 - a4*e2*s1 - a*e4*s1 + a2*e4*s1 - a*e1*s2 + a4*e1*s2 + a*e4*s2 - a1*e4*s2 + a*e1*s4 - a2*e1*s4 - a*e2*s4 + a1*e2*s4 + a1*a4*s*tv - a2*a4*s*tv - a*a2*s1*tv + a2*a4*s1*tv + a*a1*s2*tv - a1*a4*s2*tv - a*a1*s4*tv + a*a2*s4*tv))/(-(a3*e2*s1) + a4*e2*s1 + a2*e3*s1 - a4*e3*s1 - a2*e4*s1 + a3*e4*s1 + a3*e1*s2 - a4*e1*s2 - a1*e3*s2 + a4*e3*s2 + a1*e4*s2 - a3*e4*s2 - a2*e1*s3 + a4*e1*s3 + a1*e2*s3 - a4*e2*s3 - a1*e4*s3 + a2*e4*s3 + a2*e1*s4 - a3*e1*s4 - a1*e2*s4 + a3*e2*s4 + a1*e3*s4 - a2*e3*s4 - a2*a4*s1*tv + a3*a4*s1*tv + a1*a4*s2*tv - a3*a4*s2*tv - a1*a4*s3*tv + a2*a4*s3*tv))
+        v4 = (tv*(-(a2*e1*s) + a3*e1*s + a1*e2*s - a3*e2*s - a1*e3*s + a2*e3*s - a*e2*s1 + a3*e2*s1 + a*e3*s1 - a2*e3*s1 + a*e1*s2 - a3*e1*s2 - a*e3*s2 + a1*e3*s2 - a*e1*s3 + a2*e1*s3 + a*e2*s3 - a1*e2*s3 + a*a2*s1*tv - a*a3*s1*tv - a*a1*s2*tv + a*a3*s2*tv + a*a1*s3*tv - a*a2*s3*tv))/(a3*e2*s1 - a4*e2*s1 - a2*e3*s1 + a4*e3*s1 + a2*e4*s1 - a3*e4*s1 - a3*e1*s2 + a4*e1*s2 + a1*e3*s2 - a4*e3*s2 - a1*e4*s2 + a3*e4*s2 + a2*e1*s3 - a4*e1*s3 - a1*e2*s3 + a4*e2*s3 + a1*e4*s3 - a2*e4*s3 - a2*e1*s4 + a3*e1*s4 + a1*e2*s4 - a3*e2*s4 - a1*e3*s4 + a2*e3*s4 + a2*a4*s1*tv - a3*a4*s1*tv - a1*a4*s2*tv + a3*a4*s2*tv + a1*a4*s3*tv - a2*a4*s3*tv)
+    in
+        if v1 >= 0 && v2 >= 0 && v3 >= 0 && v4 >= 0
+        then RecipeSuccess (dt, [v1, v2, v3, v4])
+        else RecipeFailure
+
+recipeRequestToRecipe : RecipeRequest -> RecipeResult
+recipeRequestToRecipe request =
+    List.foldl chooseRecipe RecipeFailure ((List.map ( \ (dt, ds) -> recipeRequestWithDrinkTypeToRecipe dt ds request) (Dict.toList drinkTypeToSpec)))
+
+ingredientsToRecipe : (List IngredientProperties) -> RecipeResult
+ingredientsToRecipe ingredients =
+    case ingredients of
+        [] -> RecipeFailure
+        [i1] -> recipeRequestToRecipe { i1=i1, i2=zeroIngredientProperties, i3=zeroIngredientProperties, i4=zeroIngredientProperties }
+        [i1,i2] -> recipeRequestToRecipe { i1=i1, i2=i2, i3=zeroIngredientProperties, i4=zeroIngredientProperties }
+        [i1,i2,i3] -> recipeRequestToRecipe { i1=i1, i2=i2, i3=i3, i4=zeroIngredientProperties }
+        i1 :: i2 :: i3 :: i4 :: _ -> recipeRequestToRecipe { i1=i1, i2=i2, i3=i3, i4=i4 }
+
+ingredientNamesToRecipe : (List Ingredient) -> RecipeResult
+ingredientNamesToRecipe is =
+    let
+        props = List.map (\i -> Dict.get i ingredientToProperties) is
+        extractMaybe l = case l of
+            [] -> Just []
+            Nothing :: _ -> Nothing
+            (Just e) :: rest -> case extractMaybe rest of
+                Nothing -> Nothing
+                Just otherwise -> Just (e :: otherwise)
+        p = extractMaybe props
+    in case p of
+        Nothing -> RecipeFailure
+        Just otherwise -> ingredientsToRecipe otherwise
+
 init : Model
 init =
     { fieldIngredients = Dict.map (\i _ -> False) ingredientToProperties
@@ -126,7 +199,7 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         SubmitForm ->
-            ( model )
+            ( { model | recipe = Just (filteredIngredients model.fieldIngredients, ingredientNamesToRecipe (filteredIngredients model.fieldIngredients)) } )
         NoOp ->
             ( model )
         ToggleIngredient ingredient ->
@@ -149,7 +222,6 @@ filteredIngredients ingredients =
     Dict.keys
         (Dict.filter (\key value -> value) ingredients)
 
-
 maxIngredientSelectable : Int
 maxIngredientSelectable =
     4
@@ -157,7 +229,6 @@ maxIngredientSelectable =
 ingredientsQuantityHaveReachedtheLimit : Dict.Dict comparable Bool -> Bool
 ingredientsQuantityHaveReachedtheLimit ingredients =
     List.length (filteredIngredients ingredients) >= maxIngredientSelectable
-
 
 onEnter : msg -> Attribute msg
 onEnter msg =
@@ -170,7 +241,6 @@ onEnter msg =
                     Decode.fail "Not enter"
             )
         |> on "keyup"
-
 
 -- VIEWS
 
@@ -234,7 +304,6 @@ viewForm model =
             ]
         ]
     
-
 -- MAIN
 
 main : Program () Model Msg

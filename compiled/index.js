@@ -4753,11 +4753,259 @@ var author$project$Main$init = {
 		author$project$Main$ingredientToProperties),
 	recipe: elm$core$Maybe$Nothing
 };
-var elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
+var elm$core$Dict$foldl = F3(
+	function (func, acc, dict) {
+		foldl:
+		while (true) {
+			if (dict.$ === 'RBEmpty_elm_builtin') {
+				return acc;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$func = func,
+					$temp$acc = A3(
+					func,
+					key,
+					value,
+					A3(elm$core$Dict$foldl, func, acc, left)),
+					$temp$dict = right;
+				func = $temp$func;
+				acc = $temp$acc;
+				dict = $temp$dict;
+				continue foldl;
+			}
+		}
 	});
-var elm$core$Basics$not = _Basics_not;
+var elm$core$Dict$filter = F2(
+	function (isGood, dict) {
+		return A3(
+			elm$core$Dict$foldl,
+			F3(
+				function (k, v, d) {
+					return A2(isGood, k, v) ? A3(elm$core$Dict$insert, k, v, d) : d;
+				}),
+			elm$core$Dict$empty,
+			dict);
+	});
+var author$project$Main$filteredIngredients = function (ingredients) {
+	return elm$core$Dict$keys(
+		A2(
+			elm$core$Dict$filter,
+			F2(
+				function (key, value) {
+					return value;
+				}),
+			ingredients));
+};
+var author$project$Main$RecipeFailure = {$: 'RecipeFailure'};
+var author$project$Main$RecipeSuccess = function (a) {
+	return {$: 'RecipeSuccess', a: a};
+};
+var author$project$Main$chooseRecipe = F2(
+	function (r1, r2) {
+		var _n0 = _Utils_Tuple2(r1, r2);
+		if (_n0.a.$ === 'RecipeFailure') {
+			if (_n0.b.$ === 'RecipeFailure') {
+				var _n1 = _n0.a;
+				var _n2 = _n0.b;
+				return author$project$Main$RecipeFailure;
+			} else {
+				var _n3 = _n0.a;
+				var s = _n0.b.a;
+				return author$project$Main$RecipeSuccess(s);
+			}
+		} else {
+			var s = _n0.a.a;
+			return author$project$Main$RecipeSuccess(s);
+		}
+	});
+var author$project$Main$drinkTypeToSpec = elm$core$Dict$fromList(
+	_List_fromArray(
+		[
+			_Utils_Tuple2(
+			'Built Drink',
+			{acid: 0, ethanol: 37, sugar: 9.5, volume: 2.5}),
+			_Utils_Tuple2(
+			'Stirred Drink',
+			{acid: 0.175, ethanol: 36, sugar: 6.7, volume: 3}),
+			_Utils_Tuple2(
+			'Shaken Drink',
+			{acid: 1.3, ethanol: 27.25, sugar: 10.75, volume: 3.5}),
+			_Utils_Tuple2(
+			'Blended Drink',
+			{acid: 1.085, ethanol: 30.5, sugar: 15.2, volume: 0.75})
+		]));
+var elm$core$Basics$add = _Basics_add;
+var elm$core$Basics$and = _Basics_and;
+var elm$core$Basics$fdiv = _Basics_fdiv;
+var elm$core$Basics$ge = _Utils_ge;
+var elm$core$Basics$mul = _Basics_mul;
+var elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var elm$core$Basics$sub = _Basics_sub;
+var author$project$Main$recipeRequestWithDrinkTypeToRecipe = F3(
+	function (dt, ds, request) {
+		var tv = ds.volume;
+		var s = ds.sugar;
+		var e = ds.ethanol;
+		var a = ds.acid;
+		var _n0 = request;
+		var i1 = _n0.i1;
+		var i2 = _n0.i2;
+		var i3 = _n0.i3;
+		var i4 = _n0.i4;
+		var a1 = i1.acidity;
+		var e1 = i1.ethanol;
+		var s1 = i1.sugar;
+		var a2 = i2.acidity;
+		var e2 = i2.ethanol;
+		var s2 = i2.sugar;
+		var a3 = i3.acidity;
+		var e3 = i3.ethanol;
+		var s3 = i3.sugar;
+		var a4 = i4.acidity;
+		var e4 = i4.ethanol;
+		var s4 = i4.sugar;
+		var v1 = -((tv * (((((((((((((((((((((((((((a3 * e2) * s) - ((a4 * e2) * s)) - ((a2 * e3) * s)) + ((a4 * e3) * s)) + ((a2 * e4) * s)) - ((a3 * e4) * s)) + ((a * e3) * s2)) - ((a4 * e3) * s2)) - ((a * e4) * s2)) + ((a3 * e4) * s2)) - ((a * e2) * s3)) + ((a4 * e2) * s3)) + ((a * e4) * s3)) - ((a2 * e4) * s3)) + ((a * e2) * s4)) - ((a3 * e2) * s4)) - ((a * e3) * s4)) + ((a2 * e3) * s4)) + (((a2 * a4) * s) * tv)) - (((a3 * a4) * s) * tv)) - (((a * a3) * s2) * tv)) + (((a3 * a4) * s2) * tv)) + (((a * a2) * s3) * tv)) - (((a2 * a4) * s3) * tv)) - (((a * a2) * s4) * tv)) + (((a * a3) * s4) * tv))) / ((((((((((((((((((((((((((((((-((a3 * e2) * s1)) + ((a4 * e2) * s1)) + ((a2 * e3) * s1)) - ((a4 * e3) * s1)) - ((a2 * e4) * s1)) + ((a3 * e4) * s1)) + ((a3 * e1) * s2)) - ((a4 * e1) * s2)) - ((a1 * e3) * s2)) + ((a4 * e3) * s2)) + ((a1 * e4) * s2)) - ((a3 * e4) * s2)) - ((a2 * e1) * s3)) + ((a4 * e1) * s3)) + ((a1 * e2) * s3)) - ((a4 * e2) * s3)) - ((a1 * e4) * s3)) + ((a2 * e4) * s3)) + ((a2 * e1) * s4)) - ((a3 * e1) * s4)) - ((a1 * e2) * s4)) + ((a3 * e2) * s4)) + ((a1 * e3) * s4)) - ((a2 * e3) * s4)) - (((a2 * a4) * s1) * tv)) + (((a3 * a4) * s1) * tv)) + (((a1 * a4) * s2) * tv)) - (((a3 * a4) * s2) * tv)) - (((a1 * a4) * s3) * tv)) + (((a2 * a4) * s3) * tv)));
+		var v2 = (tv * (((((((((((((((((((((((((((a3 * e1) * s) - ((a4 * e1) * s)) - ((a1 * e3) * s)) + ((a4 * e3) * s)) + ((a1 * e4) * s)) - ((a3 * e4) * s)) + ((a * e3) * s1)) - ((a4 * e3) * s1)) - ((a * e4) * s1)) + ((a3 * e4) * s1)) - ((a * e1) * s3)) + ((a4 * e1) * s3)) + ((a * e4) * s3)) - ((a1 * e4) * s3)) + ((a * e1) * s4)) - ((a3 * e1) * s4)) - ((a * e3) * s4)) + ((a1 * e3) * s4)) + (((a1 * a4) * s) * tv)) - (((a3 * a4) * s) * tv)) - (((a * a3) * s1) * tv)) + (((a3 * a4) * s1) * tv)) + (((a * a1) * s3) * tv)) - (((a1 * a4) * s3) * tv)) - (((a * a1) * s4) * tv)) + (((a * a3) * s4) * tv))) / ((((((((((((((((((((((((((((((-((a3 * e2) * s1)) + ((a4 * e2) * s1)) + ((a2 * e3) * s1)) - ((a4 * e3) * s1)) - ((a2 * e4) * s1)) + ((a3 * e4) * s1)) + ((a3 * e1) * s2)) - ((a4 * e1) * s2)) - ((a1 * e3) * s2)) + ((a4 * e3) * s2)) + ((a1 * e4) * s2)) - ((a3 * e4) * s2)) - ((a2 * e1) * s3)) + ((a4 * e1) * s3)) + ((a1 * e2) * s3)) - ((a4 * e2) * s3)) - ((a1 * e4) * s3)) + ((a2 * e4) * s3)) + ((a2 * e1) * s4)) - ((a3 * e1) * s4)) - ((a1 * e2) * s4)) + ((a3 * e2) * s4)) + ((a1 * e3) * s4)) - ((a2 * e3) * s4)) - (((a2 * a4) * s1) * tv)) + (((a3 * a4) * s1) * tv)) + (((a1 * a4) * s2) * tv)) - (((a3 * a4) * s2) * tv)) - (((a1 * a4) * s3) * tv)) + (((a2 * a4) * s3) * tv));
+		var v3 = -((tv * (((((((((((((((((((((((((((a2 * e1) * s) - ((a4 * e1) * s)) - ((a1 * e2) * s)) + ((a4 * e2) * s)) + ((a1 * e4) * s)) - ((a2 * e4) * s)) + ((a * e2) * s1)) - ((a4 * e2) * s1)) - ((a * e4) * s1)) + ((a2 * e4) * s1)) - ((a * e1) * s2)) + ((a4 * e1) * s2)) + ((a * e4) * s2)) - ((a1 * e4) * s2)) + ((a * e1) * s4)) - ((a2 * e1) * s4)) - ((a * e2) * s4)) + ((a1 * e2) * s4)) + (((a1 * a4) * s) * tv)) - (((a2 * a4) * s) * tv)) - (((a * a2) * s1) * tv)) + (((a2 * a4) * s1) * tv)) + (((a * a1) * s2) * tv)) - (((a1 * a4) * s2) * tv)) - (((a * a1) * s4) * tv)) + (((a * a2) * s4) * tv))) / ((((((((((((((((((((((((((((((-((a3 * e2) * s1)) + ((a4 * e2) * s1)) + ((a2 * e3) * s1)) - ((a4 * e3) * s1)) - ((a2 * e4) * s1)) + ((a3 * e4) * s1)) + ((a3 * e1) * s2)) - ((a4 * e1) * s2)) - ((a1 * e3) * s2)) + ((a4 * e3) * s2)) + ((a1 * e4) * s2)) - ((a3 * e4) * s2)) - ((a2 * e1) * s3)) + ((a4 * e1) * s3)) + ((a1 * e2) * s3)) - ((a4 * e2) * s3)) - ((a1 * e4) * s3)) + ((a2 * e4) * s3)) + ((a2 * e1) * s4)) - ((a3 * e1) * s4)) - ((a1 * e2) * s4)) + ((a3 * e2) * s4)) + ((a1 * e3) * s4)) - ((a2 * e3) * s4)) - (((a2 * a4) * s1) * tv)) + (((a3 * a4) * s1) * tv)) + (((a1 * a4) * s2) * tv)) - (((a3 * a4) * s2) * tv)) - (((a1 * a4) * s3) * tv)) + (((a2 * a4) * s3) * tv)));
+		var v4 = (tv * ((((((((((((((((((((((((-((a2 * e1) * s)) + ((a3 * e1) * s)) + ((a1 * e2) * s)) - ((a3 * e2) * s)) - ((a1 * e3) * s)) + ((a2 * e3) * s)) - ((a * e2) * s1)) + ((a3 * e2) * s1)) + ((a * e3) * s1)) - ((a2 * e3) * s1)) + ((a * e1) * s2)) - ((a3 * e1) * s2)) - ((a * e3) * s2)) + ((a1 * e3) * s2)) - ((a * e1) * s3)) + ((a2 * e1) * s3)) + ((a * e2) * s3)) - ((a1 * e2) * s3)) + (((a * a2) * s1) * tv)) - (((a * a3) * s1) * tv)) - (((a * a1) * s2) * tv)) + (((a * a3) * s2) * tv)) + (((a * a1) * s3) * tv)) - (((a * a2) * s3) * tv))) / (((((((((((((((((((((((((((((((a3 * e2) * s1) - ((a4 * e2) * s1)) - ((a2 * e3) * s1)) + ((a4 * e3) * s1)) + ((a2 * e4) * s1)) - ((a3 * e4) * s1)) - ((a3 * e1) * s2)) + ((a4 * e1) * s2)) + ((a1 * e3) * s2)) - ((a4 * e3) * s2)) - ((a1 * e4) * s2)) + ((a3 * e4) * s2)) + ((a2 * e1) * s3)) - ((a4 * e1) * s3)) - ((a1 * e2) * s3)) + ((a4 * e2) * s3)) + ((a1 * e4) * s3)) - ((a2 * e4) * s3)) - ((a2 * e1) * s4)) + ((a3 * e1) * s4)) + ((a1 * e2) * s4)) - ((a3 * e2) * s4)) - ((a1 * e3) * s4)) + ((a2 * e3) * s4)) + (((a2 * a4) * s1) * tv)) - (((a3 * a4) * s1) * tv)) - (((a1 * a4) * s2) * tv)) + (((a3 * a4) * s2) * tv)) + (((a1 * a4) * s3) * tv)) - (((a2 * a4) * s3) * tv));
+		return ((v1 >= 0) && ((v2 >= 0) && ((v3 >= 0) && (v4 >= 0)))) ? author$project$Main$RecipeSuccess(
+			_Utils_Tuple2(
+				dt,
+				_List_fromArray(
+					[v1, v2, v3, v4]))) : author$project$Main$RecipeFailure;
+	});
+var elm$core$Basics$gt = _Utils_gt;
+var elm$core$List$reverse = function (list) {
+	return A3(elm$core$List$foldl, elm$core$List$cons, _List_Nil, list);
+};
+var elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
+		} else {
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							elm$core$List$foldl,
+							fn,
+							acc,
+							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
+			}
+		}
+	});
+var elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var author$project$Main$recipeRequestToRecipe = function (request) {
+	return A3(
+		elm$core$List$foldl,
+		author$project$Main$chooseRecipe,
+		author$project$Main$RecipeFailure,
+		A2(
+			elm$core$List$map,
+			function (_n0) {
+				var dt = _n0.a;
+				var ds = _n0.b;
+				return A3(author$project$Main$recipeRequestWithDrinkTypeToRecipe, dt, ds, request);
+			},
+			elm$core$Dict$toList(author$project$Main$drinkTypeToSpec)));
+};
+var author$project$Main$zeroIngredientProperties = {acidity: 0, ethanol: 0, sugar: 0};
+var author$project$Main$ingredientsToRecipe = function (ingredients) {
+	if (!ingredients.b) {
+		return author$project$Main$RecipeFailure;
+	} else {
+		if (!ingredients.b.b) {
+			var i1 = ingredients.a;
+			return author$project$Main$recipeRequestToRecipe(
+				{i1: i1, i2: author$project$Main$zeroIngredientProperties, i3: author$project$Main$zeroIngredientProperties, i4: author$project$Main$zeroIngredientProperties});
+		} else {
+			if (!ingredients.b.b.b) {
+				var i1 = ingredients.a;
+				var _n1 = ingredients.b;
+				var i2 = _n1.a;
+				return author$project$Main$recipeRequestToRecipe(
+					{i1: i1, i2: i2, i3: author$project$Main$zeroIngredientProperties, i4: author$project$Main$zeroIngredientProperties});
+			} else {
+				if (!ingredients.b.b.b.b) {
+					var i1 = ingredients.a;
+					var _n2 = ingredients.b;
+					var i2 = _n2.a;
+					var _n3 = _n2.b;
+					var i3 = _n3.a;
+					return author$project$Main$recipeRequestToRecipe(
+						{i1: i1, i2: i2, i3: i3, i4: author$project$Main$zeroIngredientProperties});
+				} else {
+					var i1 = ingredients.a;
+					var _n4 = ingredients.b;
+					var i2 = _n4.a;
+					var _n5 = _n4.b;
+					var i3 = _n5.a;
+					var _n6 = _n5.b;
+					var i4 = _n6.a;
+					return author$project$Main$recipeRequestToRecipe(
+						{i1: i1, i2: i2, i3: i3, i4: i4});
+				}
+			}
+		}
+	}
+};
 var elm$core$Maybe$Just = function (a) {
 	return {$: 'Just', a: a};
 };
@@ -4792,6 +5040,47 @@ var elm$core$Dict$get = F2(
 			}
 		}
 	});
+var author$project$Main$ingredientNamesToRecipe = function (is) {
+	var props = A2(
+		elm$core$List$map,
+		function (i) {
+			return A2(elm$core$Dict$get, i, author$project$Main$ingredientToProperties);
+		},
+		is);
+	var extractMaybe = function (l) {
+		if (!l.b) {
+			return elm$core$Maybe$Just(_List_Nil);
+		} else {
+			if (l.a.$ === 'Nothing') {
+				var _n1 = l.a;
+				return elm$core$Maybe$Nothing;
+			} else {
+				var e = l.a.a;
+				var rest = l.b;
+				var _n2 = extractMaybe(rest);
+				if (_n2.$ === 'Nothing') {
+					return elm$core$Maybe$Nothing;
+				} else {
+					var otherwise = _n2.a;
+					return elm$core$Maybe$Just(
+						A2(elm$core$List$cons, e, otherwise));
+				}
+			}
+		}
+	};
+	var p = extractMaybe(props);
+	if (p.$ === 'Nothing') {
+		return author$project$Main$RecipeFailure;
+	} else {
+		var otherwise = p.a;
+		return author$project$Main$ingredientsToRecipe(otherwise);
+	}
+};
+var elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
+	});
+var elm$core$Basics$not = _Basics_not;
 var elm$core$Basics$eq = _Utils_equal;
 var elm$core$Basics$lt = _Utils_lt;
 var elm$core$Dict$getMin = function (dict) {
@@ -5186,7 +5475,15 @@ var author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'SubmitForm':
-				return model;
+				return _Utils_update(
+					model,
+					{
+						recipe: elm$core$Maybe$Just(
+							_Utils_Tuple2(
+								author$project$Main$filteredIngredients(model.fieldIngredients),
+								author$project$Main$ingredientNamesToRecipe(
+									author$project$Main$filteredIngredients(model.fieldIngredients))))
+					});
 			case 'NoOp':
 				return model;
 			default:
@@ -5202,55 +5499,7 @@ var author$project$Main$SubmitForm = {$: 'SubmitForm'};
 var author$project$Main$ToggleIngredient = function (a) {
 	return {$: 'ToggleIngredient', a: a};
 };
-var elm$core$Dict$foldl = F3(
-	function (func, acc, dict) {
-		foldl:
-		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
-				return acc;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var $temp$func = func,
-					$temp$acc = A3(
-					func,
-					key,
-					value,
-					A3(elm$core$Dict$foldl, func, acc, left)),
-					$temp$dict = right;
-				func = $temp$func;
-				acc = $temp$acc;
-				dict = $temp$dict;
-				continue foldl;
-			}
-		}
-	});
-var elm$core$Dict$filter = F2(
-	function (isGood, dict) {
-		return A3(
-			elm$core$Dict$foldl,
-			F3(
-				function (k, v, d) {
-					return A2(isGood, k, v) ? A3(elm$core$Dict$insert, k, v, d) : d;
-				}),
-			elm$core$Dict$empty,
-			dict);
-	});
-var author$project$Main$filteredIngredients = function (ingredients) {
-	return elm$core$Dict$keys(
-		A2(
-			elm$core$Dict$filter,
-			F2(
-				function (key, value) {
-					return value;
-				}),
-			ingredients));
-};
 var author$project$Main$maxIngredientSelectable = 4;
-var elm$core$Basics$ge = _Utils_ge;
-var elm$core$Basics$add = _Basics_add;
 var elm$core$List$length = function (xs) {
 	return A3(
 		elm$core$List$foldl,
@@ -5277,7 +5526,6 @@ var elm$core$Array$Array_elm_builtin = F4(
 		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
 	});
 var elm$core$Basics$ceiling = _Basics_ceiling;
-var elm$core$Basics$fdiv = _Basics_fdiv;
 var elm$core$Basics$logBase = F2(
 	function (base, number) {
 		return _Basics_log(number) / _Basics_log(base);
@@ -5294,9 +5542,6 @@ var elm$core$Array$SubTree = function (a) {
 	return {$: 'SubTree', a: a};
 };
 var elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
-var elm$core$List$reverse = function (list) {
-	return A3(elm$core$List$foldl, elm$core$List$cons, _List_Nil, list);
-};
 var elm$core$Array$compressNodes = F2(
 	function (nodes, acc) {
 		compressNodes:
@@ -5340,13 +5585,10 @@ var elm$core$Array$treeFromBuilder = F2(
 		}
 	});
 var elm$core$Basics$floor = _Basics_floor;
-var elm$core$Basics$gt = _Utils_gt;
 var elm$core$Basics$max = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) > 0) ? x : y;
 	});
-var elm$core$Basics$mul = _Basics_mul;
-var elm$core$Basics$sub = _Basics_sub;
 var elm$core$Elm$JsArray$length = _JsArray_length;
 var elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
@@ -5441,7 +5683,6 @@ var elm$json$Json$Decode$Index = F2(
 var elm$json$Json$Decode$OneOf = function (a) {
 	return {$: 'OneOf', a: a};
 };
-var elm$core$Basics$and = _Basics_and;
 var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$or = _Basics_or;
 var elm$core$Char$toCode = _Char_toCode;
@@ -5673,75 +5914,6 @@ var elm$core$List$isEmpty = function (xs) {
 		return false;
 	}
 };
-var elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							elm$core$List$foldl,
-							fn,
-							acc,
-							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
 var elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (maybe.$ === 'Just') {

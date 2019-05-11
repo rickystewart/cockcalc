@@ -20,10 +20,21 @@ a {
     text-decoration: none;
 }
 
+.header-container {
+    max-width: 420px;
+    margin: auto;
+    background-color: #000000;
+    padding: 25px;
+    position: relative;
+	color:#FFFFFF;
+	
+}
+
+
 .form-container {
     max-width: 420px;
     margin: auto;
-    background-color: #ddd;
+    background-color: #414141;
     padding: 30px;
     box-shadow: inset 3px 3px 20px 10px #00000006;
     position: relative;
@@ -62,16 +73,17 @@ input[type="text"], input[type="password"] {
 
 label {
     display: block;
-    color: #888;
+    color: #000000;
     margin-bottom: 40px;
 }
 
 label.checkbox {
     margin-bottom: 10px;
     flex: 0 1 48%;
-    background-color: #eee;
+    background-color: #FFFFFF;
     padding: 5px;
     font-size: 14px;
+	border-radius: 5px;
 }
 
 @media screen and (min-width: 480px) {
@@ -85,7 +97,8 @@ label.disabled {
 }
 
 label.checked {
-    box-shadow: inset 2px 2px 8px 0px #aaa;
+	background-color: #FF0004;
+	color: #FFFFFF;
 }
 
 .checkboxContainer {
@@ -130,9 +143,9 @@ button.disabled {
 }
 
 .formMessage {
-    color: green;
+    color: #FFFFFF;
     height: 36px;
-    font-size: 14px;
+    font-size: 18px;
 }
 
 .formErrors li {
