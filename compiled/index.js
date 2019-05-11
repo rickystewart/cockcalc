@@ -6122,7 +6122,7 @@ var author$project$Main$viewForm = function (model) {
 										if (_n0.a.b.$ === 'RecipeFailure') {
 											var _n1 = _n0.a;
 											var _n2 = _n1.b;
-											return 'Could not make a recipe with the given ingredients';
+											return 'The ingredients you picked are not good enough to make a drink';
 										} else {
 											var _n3 = _n0.a;
 											var is = _n3.a;
@@ -6130,7 +6130,7 @@ var author$project$Main$viewForm = function (model) {
 											var name = _n4.a;
 											var proportions = _n4.b;
 											var ingredientProps = A2(author$project$Main$zip, is, proportions);
-											return 'Make a ' + (name + ('with ' + A2(
+											return 'Make a ' + (name + (' with ' + A2(
 												elm$core$String$join,
 												', ',
 												A2(

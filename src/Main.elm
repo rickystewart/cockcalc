@@ -310,7 +310,7 @@ viewForm model =
               [ text <|
                   case model.recipe of
                       Nothing -> ""
-                      Just (_, RecipeFailure) -> "Could not make a recipe with the given ingredients"
+                      Just (_, RecipeFailure) -> "The ingredients you picked are not good enough to make a drink"
                       Just (is, RecipeSuccess (name, proportions)) ->
                           let
                               ingredientProps = zip is proportions

@@ -38,6 +38,7 @@ a {
     padding: 30px;
     box-shadow: inset 3px 3px 20px 10px #00000006;
     position: relative;
+    padding-bottom: 150px
 }
 
 .form-cover {
